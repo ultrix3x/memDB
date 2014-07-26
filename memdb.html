@@ -1,0 +1,287 @@
+<HTML>
+<HEAD>
+ <TITLE>memDB brief documentation</TITLE>
+</HEAD>
+<BODY>
+<H2>memDB is a really simple databaselike class.</H2>
+You can create tables, columns and records.<BR/>
+There is no fancy errorchecking so you might run into some unexpected results if you're not careful.<BR/>
+memDB can import and export commaseparated text.<BR/>
+memDB can also load and save information from textstrings and files.<BR/>
+The textstring might be useful if the data is stored in another database.<BR/>
+<BR/>
+memDB isn't the fastest thing you've seen but it might have some nice features such as query, sorting, csv import and export, load and save database from text and not just files...<BR/>
+<BR/>
+The query "language" used is a very simple approach. It uses the eval() to check if the condition is fulfilled or not. If it is fullfilled then the current record will be added to the querytable that will be returned. Note that all conditions must be fulfilled for the record to be added to the resulting querytable.<BR/>
+The query table is a standard memTable that is given a new classname (mainly for practical reasons).<BR/>
+<BR/>
+<H3>A few words from the author</H3>
+<strong>Who did this?</strong><BR/>
+This class is written by <A HREF="mailto:thomas@unidev.biz">Thomas Björk</A>. It is licensed as <em><strong>Free to use in a non-commercial project</strong></em>. If you find it interesting and would like to use it in a commercial project you will have to register it with the author. The registration process is simple. Send me a mail with the subject <A HREF="mailto:thomas@unidev.biz?subject=memDB: register">"memDB: register"</A> and tell me who you are and why you would like to use it. You will then receive a written permission to use it in a commercial project. This means that the registration fee is $0 or ?0 or 0 in any currency. All it will cost you is the mail you send and ask.<BR/>
+
+<strong>...and why did I write memDB?</strong><BR/>
+In my efforts to write a good content management system I noticed that the users of the CMS needed a more dynamic datastructure than an ordinary database could provide.<BR/>
+When I looked around I found a few simple solutions that could have made my day. But they all missed out on a few critical functions that I needed.<BR/>
+So I took an afternoon and wrote my own implementation that would do it for me.<BR/>
+<BR/>
+<H3>Special features</H3>
+<strong>Default values</strong><BR/>
+Any column that is added to a table has a default value.<BR/>
+<BR/>
+<strong>AutoInc fields</strong><BR/>
+Any field can be set to autoinc. When creating a column you just specify it to be autoinc and set the baseindex to use. The baseindex uses the defaultvalueslot to store it's current value. It is incremented BEFORE it is assigned as a default value and then stored as a new default value.<BR/>
+<BR/>
+<strong>Non-strict structure</strong><BR/>
+Some people might find this to be strange but the memDB isn't strict. This means that you can add a value to a field that doesn't exist without getting any error messages. Neither will there be any errormessage if you assign a stringvalue to a field that should contain any type of numeric value. There might however be issues in a later stage but I leave the validitychecking  up to the user.<BR/>
+<BR/>
+<BR/>
+<H2>A little warning</H2>
+Some functions doesn't work. This is mainly because of my lack of sleep during the last few weeks.<BR/>
+The problem is sometimes when accessing a table through the databaseobject. The references messes up and the table returns unaltered. The best way to check if a function works is to test it. If it leaves the table unaltered then it probably doesn't work.<BR/>
+PS! If you have a quick fix then I'd appreciate a mail :-) since I'm loosing my self into this years vacation any minute now.<BR/>
+<HR/>
+<H2>Some examples</H2>
+<H3>Basic example</H3>
+<PRE>
+include("memDB.php");
+
+// Create the database object
+$db = new memDB();
+// Create a table
+$db->CreateTable("users");
+// Create three columns
+$db->AddColumn("users","id",memColAutoInc,0);
+$db->AddColumn("users","username",memColText,"");
+$db->AddColumn("users","password",memColText,"");
+// Add a record
+$db->AddRecord("users");
+// Populate the record
+$db->SetField("users","username","Thomas Björk");
+$db->SetField("users","password","Wouldn't you like to know");
+// Save the database to a string
+$dbstring = $db->SaveDatabase();
+</PRE>
+
+<H3>Load database from a string</H3>
+<PRE>
+include("memDB.php");
+
+// some code here
+
+// Load the database from a string
+$db->LoadDatabase($dbstring);
+</PRE>
+
+<H3>Save database to file</H3>
+<PRE>
+include("memDB.php");
+
+// some code here
+
+// Save the database to a file
+$db->SaveDatabase("testfile.db");
+</PRE>
+
+<H3>Load database from file</H3>
+<PRE>
+include("memDB.php");
+
+// some code here
+
+// Load the database from a file
+$db->LoadDatabase("","testfile.db");
+</PRE>
+
+<HR/>
+<H3>Defined constants</H3>
+<B>memColUndefined</B> = 0<BR/>
+<B>memColText</B> = 1<BR/>
+<B>memColInt</B> = 2<BR/>
+<B>memColFloat</B> = 3<BR/>
+<B>memColAutoInc</B> = 4<BR/>
+<B>memSortOrderAsc</B> = 0<BR/>
+<B>memSortOrderDesc</B> = 1<BR/>
+
+<H3>Supporting functions</H3>
+The supporting functions are used internally by memDB (or rather memTable) to perform sorting and selections.<BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SortCmp($a, $b);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function selectFilter($var);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function BTNCrypt($text, $key);</strong></em><BR/>
+BTN - Better Than Nothing. This is not in any way a secure way to handle information. But as the name says, it is better than nothing.<BR/>
+The only requirement for this function is that the system supports MD5.<BR/>
+
+<HR WIDTH="25%"/>
+<em><strong>function BTNDecrypt($text, $key);</strong></em><BR/>
+BTN - Better Than Nothing. This is not in any way a secure way to handle information. But as the name says, it is better than nothing.<BR/>
+The only requirement for this function is that the system supports MD5.<BR/>
+
+<HR WIDTH="25%"/>
+<HR/>
+
+<H3>class memTable {</H3>
+<HR WIDTH="25%"/>
+<em><strong>var $tablename;</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>var $cols;</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>var $rowindex;</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>var $records;</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function memTable($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function finalize();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Clear();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function RecordCount();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function FieldCount();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function IsTablename($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function AddColumn($colname, $coltype, $defaultvalue);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Delete();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function ReIndex();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function First();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Last();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Prev();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Next();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Pos($index);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function AddRecord();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldIndex($fieldname);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetField($fieldname);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldByIndex($fieldindex);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SetField($fieldname, $value);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SetFieldByIndex($fieldindex, $value);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetRow();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SetRow($rowdata);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldInfo($fieldname);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldInfoByIndex($fieldindex);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function importCSV($csv, $delimiter, $preserveOld = true);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function exportCSV($delimiter, $quotechar = "\"");</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SortByIndex($sortorder);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Sort($sortorder);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Select($select);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SelectByIndex($select);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<B>}</B><BR/>
+<HR/>
+
+<H3>class memQuery extends memTable {</H3>
+<B>}</B><BR/>
+<HR/>
+
+<H3>class memDB {</H3>
+The functions found in the memDB class is mainly the same as in memTable but with the added $tablename describing which table to use.<BR/>
+<HR WIDTH="25%"/>
+<em><strong>var $tables;</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function memDB();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function finalize();</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function LoadDatabase($s, $filename = "", $key = "");</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabase($filename = "");</strong></em><BR/>
+Save database. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabaseBZ2($filename = "");</strong></em><BR/>
+Save database with bz2 compression. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabaseBTN($key, $filename = "");</strong></em><BR/>
+Save database with BTN - Better Than Nothing encryption. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabaseBZ2BTN($key, $filename = "");</strong></em><BR/>
+Save database with bz2 compression and BTN - Better Than Nothing encryption. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabaseCR($key, $filename = "");</strong></em><BR/>
+Save database with encryption. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function SaveDatabaseBZ2CR($key, $filename = "");</strong></em><BR/>
+Save database with bz2 compression and encryption. If the filename is omitted then the database is returned as a string.
+<HR WIDTH="25%"/>
+<em><strong>function CreateTable($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Clear($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function RecordCount($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function FieldCount($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function AddColumn($tablename, $colname, $coltype, $defaultvalue);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Delete($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetTableIndex($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function First($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Last($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Prev($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Next($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Pos($tablename,$index);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function AddRecord($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetField($tablename, $fieldname);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldByIndex($tablename, $fieldindex);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SetField($tablename, $fieldname, $value);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SetFieldByIndex($tablename, $fieldindex, $value);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldInfo($tablename, $fieldname);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetFieldInfoByIndex($tablename, $fieldindex);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function importCSV($tablename, $csv, $delimiter, $preserveOld = true);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function exportCSV($tablename, $delimiter, $quotechar = "\"");</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function & Query($tablename, $filter = NULL);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function GetTable($tablename);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SortByIndex($tablename, $sortorder);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Sort($tablename, $sortorder);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function SelectByIndex($tablename, $select);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<em><strong>function Select($tablename, $select);</strong></em><BR/>
+<HR WIDTH="25%"/>
+<B>}</B><BR/>
+
+</BODY>
+</HTML>

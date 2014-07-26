@@ -1,0 +1,7 @@
+Here are a small list of NTH - Nice To Have
+
+- encryption of entire database
+- encryption of single table
+- locate, find a record based on a fields value
+- better query language
+- some nice features provided by the users
